@@ -1,0 +1,9 @@
+﻿  game.cpp
+D:\E\computerlearning\C++\C++实训\teris\teris\teris\game.cpp(449,13): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\E\computerlearning\C++\C++实训\teris\teris\teris\game.cpp(637): warning C4715: “game::preCraftPos”: 不是所有的控件路径都返回值
+D:\E\computerlearning\C++\C++实训\teris\teris\teris\game.cpp(581): warning C4172: 返回局部变量或临时变量的地址: temp
+D:\E\computerlearning\C++\C++实训\teris\teris\teris\game.cpp(594): warning C4172: 返回局部变量或临时变量的地址: temp
+D:\E\computerlearning\C++\C++实训\teris\teris\teris\game.cpp(607): warning C4172: 返回局部变量或临时变量的地址: temp
+D:\E\computerlearning\C++\C++实训\teris\teris\teris\game.cpp(620): warning C4172: 返回局部变量或临时变量的地址: temp
+D:\E\computerlearning\C++\C++实训\teris\teris\teris\game.cpp(633): warning C4172: 返回局部变量或临时变量的地址: temp
+  teris.vcxproj -> D:\E\computerlearning\C++\C++实训\teris\teris\x64\Debug\teris.exe
