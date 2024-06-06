@@ -13,8 +13,9 @@ namespace game {
 		const int gamePause = 4;
 		const int gameOver = 5;
 		const int gameExit = 6;
-		const int gameShop = 7;
+		const int gameSave = 7;
 		const int gameHelp = 8;
+		const int gameStartOldGame = 9;
 	};
 
 	extern GameAttribute gA;
@@ -132,7 +133,26 @@ namespace game {
 	//实现快速下降
 	void quickDown();
 
+	//把当前游戏地图储存进文件
+	void saveMap();
 
+	//把当前游戏的状态储存进文件
+	void saveGameState();
+
+	//读取游戏地图文件
+	void readMap();
+
+	//读取游戏状态文件
+	void readGameStates();
+
+	//绘制提醒继续游戏界面
+	void drawTellContinue();
+
+	//检测是否有本地文件
+	bool checkLocalFile();
+
+	//继续游戏初始化
+	void continueGameInit();
 }
 
 class gameWindow

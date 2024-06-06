@@ -3,8 +3,9 @@
 
 int 
 main(void) {
+
 	game::gameMenuDraw();
-	//MOUSEMSG msg;
+	MOUSEMSG msg;
 	//while (true) {
 	//	msg = GetMouseMsg();
 	//	if (msg.uMsg == WM_LBUTTONDOWN) {

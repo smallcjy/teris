@@ -9,7 +9,10 @@
 #include"gameAttribute.h"
 #include"Pos.h"
 #include"Shape.h"
+#include"File.h"
+
 
 using std::vector;
 using std::string;
+
 

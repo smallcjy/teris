@@ -28,6 +28,7 @@ public:
 
 class TShape : public TerisShape {
 public:
+	TShape(){}
 	TShape(Pos p1) {
 		this->type = ti;
 		blockPos[0] = p1;

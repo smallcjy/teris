@@ -59,6 +59,10 @@ void gameWindow::gameWindowInit() {
 	fillrectangle(826, 447, 985, 492);
 	settextstyle(35, 0, NULL);
 	outtextxy(873, 453, "EXIT");
+	//绘制保存游戏图标
+	fillrectangle(826, 527, 985, 572);
+	settextstyle(35, 0, NULL);
+	outtextxy(873, 533, "SAVE");
 	//预览下一个方块图标的窗口
 	rectangle(300, 150, 450, 300);
 	//绘制score图标
@@ -122,6 +126,17 @@ void game::gameInit() {
 	game::gamePreGainNextBlock();
 }
 
+void game::continueGameInit() {
+	//scores初始化
+	xScoreInit();
+	//初始化形状指针
+	nowShape = new TShape();
+	nextShape = new TShape();
+	readMap();
+	readGameStates();
+	game_state = game::gameState::gamePlaying;
+}
+
 void game::gamePreGainNextBlock() {
 	//随机生成第一个方块的位置和形状
 	int index = 0;
@@ -163,11 +178,34 @@ void game::gameStateSelect() {
 		break;
 	}
 	case game::gameState::gameStartNewGame: {
+		//游戏开始前先查看本地有没有存档，如果有提示玩家是否接着上一盘继续！
+		if (!game::checkLocalFile()) {
+			game::drawTellContinue();
+			FlushBatchDraw();
+			while (1) {
+				msg = GetMouseMsg();
+				//判断是否继续上一盘游戏
+				if (msg.x >= 558 && msg.x <= 622 && msg.y >= 489 && msg.y <= 524 && msg.uMsg == WM_LBUTTONDOWN) {
+					game_state = game::gameState::gameStartOldGame;
+					break;
+				}
+				if (msg.x >= 669 && msg.x <= 735 && msg.y >= 489 && msg.y <= 524 && msg.uMsg == WM_LBUTTONDOWN) {
+					break;
+				}
+			}
+		}
+
+		if (game_state == game::gameState::gameStartOldGame) break;
+
 		game::gameInit();
 		//把游戏的状态设置为playing
 		game::game_state = game::gameState::gamePlaying;
 		break;
 
+	}
+	case game::gameState::gameStartOldGame: {
+		game::continueGameInit();
+		break;
 	}
 	case game::gameState::gamePlaying: {
 		game::gameplay();
@@ -185,6 +223,13 @@ void game::gameStateSelect() {
 		break;
 	}
 	case game::gameState::gamePause: {
+		//等待下一步操作
+		mouseAction();
+		break;
+	}
+	case game::gameState::gameSave: {
+		saveMap();
+		saveGameState();
 		//等待下一步操作
 		mouseAction();
 	}
@@ -213,6 +258,11 @@ void game::mouseAction() {
 	if (msg.x >= 826 && msg.x <= 985 && msg.y >= 357 && msg.y <= 402 && msg.uMsg == WM_LBUTTONDOWN) {
 		game_state = game::gameState::gamePlaying;
 		Sleep(30);
+	}
+	//判断是否点击保存游戏按钮
+	if (msg.x >= 826 && msg.x <= 985 && msg.y >= 527 && msg.y <= 572 && msg.uMsg == WM_LBUTTONDOWN) {
+		//退出窗口
+		game_state = game::gameState::gameSave;
 	}
 }
 
@@ -339,6 +389,22 @@ void game::gameMapDraw() {
 			}
 		}
 	}
+}
+
+//绘制提醒是否继续游戏界面
+void game::drawTellContinue() {
+	setbkcolor(WHITE);
+	//先清屏在绘画
+	clearrectangle(528, 120, 752, 565);
+	//绘制文字
+	settextstyle(30, 0, NULL);
+	outtextxy(540, 195, "You has archive");
+	outtextxy(546, 300, "continue or not");
+	settextstyle(40, 0, NULL);
+	outtextxy(558, 489, "Yes");
+	outtextxy(669, 489, "Not");
+
+
 }
 
 void game::Pos2Map(Pos p) {
@@ -652,4 +718,47 @@ void game::quickDown() {
 	}
 	//更新方块
 	nowShape = nextShape;
+}
+
+void game::saveMap() {
+	MapFile mapFile;
+	mapFile.deleteContent("map.dat");
+	mapFile.writeInFile("map.dat", game::map);
+}
+
+void game::saveGameState() {
+	//下面列举保证游戏正常运行的几个需要储存的状态
+	//gameState
+	//nowShape
+	//nextShape
+	//nowType
+	//nextType
+	//isLocated
+	//isQuicked
+	//winScore
+
+	//按顺序写入
+	GameStateFile gameStateFile;
+	gameStateFile.deleteContent("gameStates.dat");
+	gameStateFile.writeInFile("gameStates.dat", game_state, nowShape, nextShape, nowType, nextType, isLocated, isQuickDown, winScore);
+	//gameStateFile.readFromFile("gameStates.dat", game_state, *nowShape, *nextShape, nowType, nextType, (int&)isLocated, (int&)isQuickDown, winScore);
+}
+
+void game::readMap() {
+	MapFile mapFile;
+	map.clear();
+	mapFile.readFromFile("map.dat", map);
+
+
+}
+
+void game::readGameStates() {
+	GameStateFile gameStatesFile;
+	gameStatesFile.readFromFile("gameStates.dat", game_state, nowShape, nextShape, nowType, nextType, (int&)isLocated, (int&)isQuickDown, winScore);
+}
+
+bool game::checkLocalFile() {
+	MapFile mapFile;
+	return mapFile.isEqual("map.dat");
+
 }
